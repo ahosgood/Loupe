@@ -3,8 +3,8 @@
  * Shadow Zoomables
  * --------------------------------------------------------------------------------
  * Author:      Andrew Hosgood
- * Version:     0.9.6
- * Date:        17/01/2014
+ * Version:     0.9.7
+ * Date:        12/03/2014
  * ================================================================================
  */
 
@@ -18,6 +18,7 @@
 						arrTouchIDs = [],
 						objStartingPositions = {},
 						strEnlargedImageUri = null,
+						timIntentTimeout = null,
 						intLoupeWidth = objOptions.loupeWidth,
 						intStartingSeparation = 0,
 						intLastTouchTime = 0,
@@ -265,12 +266,28 @@
 										transform: 'translate(' + ( intLoupeOffsetX - intWindowScrollLeft ) + 'px, ' + ( intLoupeOffsetY - intWindowScrollTop ) + 'px)'
 									};
 
+
 								if( blDoFirstDraw === true ) {
-									$( '.' + objOptions.loupeClass ).fadeOut(),
-									jqoEnlargedImage.css( objImageCSS ).stop( true, true ).fadeIn();
-								} else {
-									jqoEnlargedImage.css( objImageCSS );
+									$( '.' + objOptions.loupeClass ).fadeOut();
 								}
+
+								jqoEnlargedImage.css( objImageCSS );
+
+
+
+								var funInitiate = function() {
+										if( blDoFirstDraw === true ) {
+											jqoEnlargedImage.stop( true, true ).fadeIn();
+										}
+									};
+
+								timIntentTimeout = setTimeout( funInitiate, objOptions.intentDelay );
+
+
+
+
+
+
 							},
 						doLoupeWithCache = function() {
 								if( touchBrowser() ) {
@@ -293,6 +310,15 @@
 								}
 
 								return parseInt( Math.floor( datNow.getTime() / 1000 ) + strMilliseconds.substr( -3 ) );
+							},
+						clearIntentTimeout = function() {
+								console.log( 'Clearing...' );
+								console.log( typeof timIntentTimeout );
+								console.log( timIntentTimeout );
+								if( typeof timIntentTimeout === 'number' ) {
+									clearTimeout( timIntentTimeout );
+									console.log( 'Cleared' );
+								}
 							};
 
 						setLoupeDisplacement();
@@ -531,6 +557,10 @@
 								objCache.intWindowScrollX = jqoWindow.scrollLeft(),
 								objCache.intWindowScrollY = jqoWindow.scrollTop();
 
+								if( objOptions.intent ) {
+									//clearIntentTimeout();
+								}
+
 								doLoupe( objCache.jqoTarget, jqoEnlargedImage, e.pageX, e.pageY, true );
 							}
 						),
@@ -543,13 +573,18 @@
 								}
 							}
 						).on( 'mouseleave', '.' + objOptions.loupeClass,
-							function( e ) {
+							function() {
 								var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-zoomablesfullimage="' + strEnlargedImageUri + '"]' );
 								strEnlargedImageUri = null;
 								if( jqoEnlargedImage ) {
 									jqoEnlargedImage.stop().fadeOut();
 									objCache.jqoTarget = null;
 								}
+							}
+						).on( 'mouseleave', '[' + strZoomableAttribute + ']',
+							function() {
+								console.log( 'LEAVE' );
+								clearIntentTimeout();
 							}
 						).on( 'click', '.' + objOptions.loupeClass,
 							function( e ) {
@@ -567,7 +602,8 @@
 				$.fn.zoomables.objDefaultOptions = {
 						doubleTapSpeed: 350,
 						imageMargin: 0.15,
-						intentDelay: 400,
+						intent: false,
+						intentDelay: 800,
 						intentDistance: 50,
 						loaderImage: '',
 						loaderImageSize: '50px 50px',
