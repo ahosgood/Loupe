@@ -1,10 +1,11 @@
 /**
  * ================================================================================
- * Shadow Zoomables
+ * Loupe
+ * A simple touch-compatible magnifier for jQuery
  * --------------------------------------------------------------------------------
  * Author:      Andrew Hosgood
  * Version:     0.9.6
- * Date:        17/01/2014
+ * Date:        23/08/2014
  * ================================================================================
  */
 
@@ -12,9 +13,9 @@
 	function( window, $ ) {
 		try {
 			if( $ ) {
-				$.fn.zoomables = function( strZoomableAttribute, objUserOptions ) {
-						var jqoZoomablesScope = this,
-						objOptions = $.extend( {}, $.fn.zoomables.objDefaultOptions, objUserOptions ),
+				$.fn.loupe = function( strZoomableAttribute, objUserOptions ) {
+						var jqoLoupeScope = this,
+						objOptions = $.extend( {}, $.fn.loupe.objDefaultOptions, objUserOptions ),
 						arrTouchIDs = [],
 						objStartingPositions = {},
 						strEnlargedImageUri = null,
@@ -297,7 +298,7 @@
 
 						setLoupeDisplacement();
 
-						jqoZoomablesScope.find( '[' + strZoomableAttribute +']' ).css(
+						jqoLoupeScope.find( '[' + strZoomableAttribute +']' ).css(
 							{
 								cursor: 'none',
 								'-webkit-touch-callout': 'none',
@@ -331,10 +332,10 @@
 											if( strEnlargedImageUri === null ) {
 												strEnlargedImageUri = jqoTarget.attr( strZoomableAttribute );
 
-												var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-zoomablesfullimage="' + strEnlargedImageUri + '"]' );
+												var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-loupefullimage="' + strEnlargedImageUri + '"]' );
 
 												if( !jqoEnlargedImage.length ) {
-													jqoEnlargedImage = $( '<div class="' + objOptions.loupeClass + '" data-zoomablesfullimage="' + strEnlargedImageUri + '"/>' ).css(
+													jqoEnlargedImage = $( '<div class="' + objOptions.loupeClass + '" data-loupefullimage="' + strEnlargedImageUri + '"/>' ).css(
 														{
 															width: intLoupeWidth + 'px',
 															height: intLoupeWidth + 'px',
@@ -365,7 +366,7 @@
 													).on( 'dbltap',
 														function() {
 															intLastTouchTime = 0;
-															//TODO: alert( $( this ).attr( 'data-zoomablesfullimage' ) );
+															//TODO: alert( $( this ).attr( 'data-loupefullimage' ) );
 														}
 													).hide().appendTo( 'body' );
 
@@ -416,10 +417,10 @@
 										if( arrTouchIDs.length > 1
 												|| ( arrTouchIDs.length === 1
 													&& jqoTarget.attr( strZoomableAttribute ) )
-													/*&& jqoTarget.attr( 'data-zoomablesfullimage' ) === jqoThisZoomable.attr( 'data-zoomablesfullimage' )*/ ) {
+													/*&& jqoTarget.attr( 'data-loupefullimage' ) === jqoThisZoomable.attr( 'data-loupefullimage' )*/ ) {
 											e.preventDefault();
 
-											var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-zoomablesfullimage="' + strEnlargedImageUri + '"]' );
+											var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-loupefullimage="' + strEnlargedImageUri + '"]' );
 
 											if( intTouchID === arrTouchIDs[0] ) {
 												doLoupe( jqoTarget, jqoEnlargedImage, objTouch.screenX, objTouch.screenY );
@@ -455,7 +456,7 @@
 									}
 
 									if( typeof objTouch === 'object' ) {
-										jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-zoomablesfullimage="' + strEnlargedImageUri + '"]' );
+										jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-loupefullimage="' + strEnlargedImageUri + '"]' );
 
 										arrTouchIDs.splice( arrTouchIDs.indexOf( objTouch.identifier ), 1 );
 									}
@@ -480,14 +481,14 @@
 								}
 							}
 						),
-						jqoZoomablesScope.on( 'mouseenter', '[' + strZoomableAttribute + ']',
+						jqoLoupeScope.on( 'mouseenter', '[' + strZoomableAttribute + ']',
 							function( e ) {
 								objCache.jqoTarget = $( this ),
 								strEnlargedImageUri = objCache.jqoTarget.attr( strZoomableAttribute );
-								var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-zoomablesfullimage="' + strEnlargedImageUri + '"]' );
+								var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-loupefullimage="' + strEnlargedImageUri + '"]' );
 
 								if( !jqoEnlargedImage.length ) {
-									jqoEnlargedImage = $( '<div class="' + objOptions.loupeClass + '" data-zoomablesfullimage="' + strEnlargedImageUri + '"/>' ).css(
+									jqoEnlargedImage = $( '<div class="' + objOptions.loupeClass + '" data-loupefullimage="' + strEnlargedImageUri + '"/>' ).css(
 										{
 											width: intLoupeWidth + 'px',
 											height: intLoupeWidth + 'px',
@@ -537,14 +538,14 @@
 						$( 'html' ).on( 'mousemove',
 							function( e ) {
 								if( objCache.jqoTarget !== null ) {
-									var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-zoomablesfullimage="' + strEnlargedImageUri + '"]' );
+									var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-loupefullimage="' + strEnlargedImageUri + '"]' );
 
 									doLoupe( objCache.jqoTarget, jqoEnlargedImage, e.pageX, e.pageY );
 								}
 							}
 						).on( 'mouseleave', '.' + objOptions.loupeClass,
 							function( e ) {
-								var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-zoomablesfullimage="' + strEnlargedImageUri + '"]' );
+								var jqoEnlargedImage = $( '.' + objOptions.loupeClass + '[data-loupefullimage="' + strEnlargedImageUri + '"]' );
 								strEnlargedImageUri = null;
 								if( jqoEnlargedImage ) {
 									jqoEnlargedImage.stop().fadeOut();
@@ -556,7 +557,7 @@
 								if( !touchBrowser() ) {
 									e.preventDefault();
 									var jqoTarget = $( this );
-									//TODO: alert( jqoTarget.attr( 'data-zoomablesfullimage' ) );
+									//TODO: alert( jqoTarget.attr( 'data-loupefullimage' ) );
 								}
 							}
 						),
@@ -564,7 +565,7 @@
 
 						return this;
 					},
-				$.fn.zoomables.objDefaultOptions = {
+				$.fn.loupe.objDefaultOptions = {
 						doubleTapSpeed: 350,
 						imageMargin: 0.15,
 						intentDelay: 400,
@@ -575,7 +576,7 @@
 						loupeBackgroundColour: '#FFF',
 						loupeBorderColour: '#FFF',
 						loupeBorderWidth: 3,
-						loupeClass: 'zoomables-loupe',
+						loupeClass: 'loupe',
 						loupePosition: 'nw',
 						loupeResize: false,
 						loupeWidth: 200,
@@ -585,7 +586,7 @@
 						separationScaling: 1.25
 					};
 			} else {
-				throw 'Shadow Zoomables requires jQuery to run';
+				throw 'Loupe requires jQuery to run';
 			}
 		} catch( err ) {
 			if( window.console ) {
